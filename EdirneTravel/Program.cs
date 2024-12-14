@@ -21,7 +21,8 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme)
+    .AddBearerToken(IdentityConstants.BearerScheme);
 
 
 builder.Services.AddIdentityCore<User>()
@@ -75,8 +76,6 @@ app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
 app.MapIdentityApi<User>();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
