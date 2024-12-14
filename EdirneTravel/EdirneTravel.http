@@ -1,0 +1,6 @@
+@EdirneTravel_HostAddress = http://localhost:5160
+
+GET {{EdirneTravel_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
