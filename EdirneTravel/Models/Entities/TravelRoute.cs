@@ -6,6 +6,8 @@ namespace EdirneTravel.Models.Entities
     {
         public string UserId { get; set; }
         public string Name { get; set; }
+        public string AverageDuration { get; set; }
+        public byte[] ImageData { get; set; }
         public int CategoryId { get; set; }
 
         public User User { get; set; }

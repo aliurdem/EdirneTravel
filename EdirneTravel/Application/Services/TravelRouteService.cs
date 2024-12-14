@@ -91,6 +91,8 @@ namespace EdirneTravel.Application.Services
                         Name = travelRouteDto.Name,
                         UserId = travelRouteDto.UserId,
                         CategoryId = travelRouteDto.CategoryId,
+                        AverageDuration = travelRouteDto.AverageDuration,
+                        ImageData = travelRouteDto.ImageData,
                     };
 
                     _repository.Insert(travelRoute);

@@ -7,6 +7,8 @@ namespace EdirneTravel.Models.Dtos
     {
         public string Name { get; set; }
         public string UserId { get; set; }
+        public string AverageDuration { get; set; }
+        public byte[] ImageData { get; set; }
         public int CategoryId { get; set; }
         public List<TravelRoutePlaceDto>? Places { get; set; }
     }
