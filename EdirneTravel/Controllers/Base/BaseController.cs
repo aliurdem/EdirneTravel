@@ -4,6 +4,7 @@ using EdirneTravel.Models.Entities.Base;
 using EdirneTravel.Models.Utilities.Filtering;
 using EdirneTravel.Models.Utilities.Paging;
 using EdirneTravel.Models.Utilities.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -63,6 +64,7 @@ namespace EdirneTravel.Controllers.Base
         }
 
         [HttpGet("[action]")]
+        [Authorize]
         public virtual IActionResult GetAll()
         {
             var result = _manager.GetAll();
