@@ -64,7 +64,6 @@ namespace EdirneTravel.Controllers.Base
         }
 
         [HttpGet("[action]")]
-        [Authorize]
         public virtual IActionResult GetAll()
         {
             var result = _manager.GetAll();

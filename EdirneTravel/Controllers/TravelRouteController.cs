@@ -4,7 +4,9 @@ using EdirneTravel.Controllers.Base;
 using EdirneTravel.Models.Dtos;
 using EdirneTravel.Models.Dtos.TravelRoute;
 using EdirneTravel.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EdirneTravel.Controllers
 {
@@ -21,8 +23,12 @@ namespace EdirneTravel.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public override async Task<IActionResult> Create([FromBody] TravelRouteDto travelRouteDto, CancellationToken cancellationToken)
         {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            travelRouteDto.UserId = userId;
+
             var result = _travelRouteService.SaveTravelRouteWithPlaces(travelRouteDto);
 
             if (result.Success)
@@ -32,6 +38,7 @@ namespace EdirneTravel.Controllers
         }
 
         [HttpPatch]
+        [Authorize]
         public override async Task<IActionResult> Update([FromBody] TravelRouteDto travelRouteDto, CancellationToken cancellationToken)
         {
             var result = _travelRouteService.SaveTravelRouteWithPlaces(travelRouteDto);
