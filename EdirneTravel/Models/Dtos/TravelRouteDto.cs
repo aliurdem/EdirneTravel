@@ -6,7 +6,7 @@ namespace EdirneTravel.Models.Dtos
     public class TravelRouteDto : BaseDto
     {
         public string Name { get; set; }
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public string AverageDuration { get; set; }
         public byte[] ImageData { get; set; }
         public int CategoryId { get; set; }
