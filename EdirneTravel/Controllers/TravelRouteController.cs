@@ -4,8 +4,11 @@ using EdirneTravel.Controllers.Base;
 using EdirneTravel.Models.Dtos;
 using EdirneTravel.Models.Dtos.TravelRoute;
 using EdirneTravel.Models.Entities;
+using EdirneTravel.Models.Utilities.Filtering;
+using EdirneTravel.Models.Utilities.Paging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Security.Claims;
 
 namespace EdirneTravel.Controllers
@@ -58,6 +61,31 @@ namespace EdirneTravel.Controllers
                 return Ok(result.Data);
 
             return BadRequest(result.Message);
+        }
+
+        [HttpGet("GetListForUser")]
+        [Authorize]
+        public async Task<IActionResult> GetListForUser()
+        {
+            PaginationParameters paginationParameters = new PaginationParameters();
+            FilterParameters filterParameters = new FilterParameters();
+           
+            Filter filter = new Filter();
+            filter.Property = "UserId";
+            filter.Operator = "==";
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            filter.Value = userId;
+
+            filterParameters.Filters.Add(filter);
+
+            var result = _travelRouteService.GetList(paginationParameters, filterParameters);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.MetaData));
+
+            if (result.Success)
+            {
+                return Ok(result.Data);
+            }
+            return BadRequest(result);
         }
     }
 }

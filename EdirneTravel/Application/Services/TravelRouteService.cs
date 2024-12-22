@@ -12,6 +12,7 @@ using EdirneTravel.Models.Entities.Base;
 using EdirneTravel.Models.Utilities.Filtering;
 using EdirneTravel.Models.Utilities.Paging;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EdirneTravel.Application.Services
 {
@@ -151,6 +152,8 @@ namespace EdirneTravel.Application.Services
             {
                 Id = trp.PlaceId,
                 Sequence = trp.Sequence,
+                Longitude = trp.Place.Longitude,
+                Latitude = trp.Place.Latitude,
                 Name = trp.Place.Name,
                 Description = trp.Place.Description,
             }).ToList();
@@ -164,6 +167,33 @@ namespace EdirneTravel.Application.Services
             };
             return new SuccessDataResult<TravelRouteDto>(dto);
         }
-       
+
+        public IDataResult<PagedList<TravelRouteDto>> GetListWithPlaces([FromQuery] PaginationParameters paginationParameters, [FromBody] FilterParameters filterParameters)
+        {
+            PagedList<TravelRoute> pagedList = _repository.GetList(paginationParameters, filterParameters);
+
+            if (pagedList == null || !pagedList.Any())
+            {
+                return new ErrorDataResult<PagedList<TravelRouteDto>>("No travel routes found for the specified user and filters.");
+            }
+
+            var items = new List<TravelRouteDto>();
+
+            foreach (var item in pagedList)
+            {
+                var withPlacesDto = GetTravelRouteWithPlacesById(item.Id).Data;
+                items.Add(withPlacesDto);
+            }
+
+            var pagedListDto = new PagedList<TravelRouteDto>(
+                items,
+                pagedList.MetaData.TotalCount,
+                paginationParameters.PageNumber,
+                paginationParameters.PageSize
+            );
+
+            return new SuccessDataResult<PagedList<TravelRouteDto>>(pagedListDto);
+        }
+
     }
 }

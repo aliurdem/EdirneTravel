@@ -2,6 +2,7 @@ using EdirneTravel.Application.Services;
 using EdirneTravel.Application.Services.Base;
 using EdirneTravel.Application.Services.ImageService;
 using EdirneTravel.Data;
+using EdirneTravel.Data.DataSeeders;
 using EdirneTravel.Extensions;
 using EdirneTravel.Models.Dtos.Auth;
 using EdirneTravel.Models.Entities;
@@ -26,6 +27,7 @@ builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationSche
 
 
 builder.Services.AddIdentityCore<User>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints();
 
@@ -62,14 +64,30 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.LoginPath = "/login"; // Oturum açma sayfasý
+    options.AccessDeniedPath = "/denied"; // Yetkisiz eriþim yönlendirmesi
+
 });
 
 var app = builder.Build();
 
-// Identity minimal API'lerini map et
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await SeedRoles.Initialize(services);
+        await SeedUsers.Initialize(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Veri tabaný seed iþlemi sýrasýnda bir hata oluþtu.");
+    }
+}
+
 app.MapIdentityApi<User>();
 
-// Kimlik doðrulama gerektiren bir logout endpointi örneði (SignInManager var)
 app.MapPost("/logout", async (SignInManager<User> signInManager) =>
 {
     await signInManager.SignOutAsync();
@@ -85,6 +103,9 @@ app.MapGet("/me", async (UserManager<User> userManager, ClaimsPrincipal user) =>
     }
 
     var currentUser = await userManager.FindByIdAsync(userId);
+
+    var userRoles = await userManager.GetRolesAsync(currentUser);
+
     if (currentUser == null)
     {
         return Results.NotFound(new { message = "Kullanýcý bulunamadý." });
@@ -93,7 +114,8 @@ app.MapGet("/me", async (UserManager<User> userManager, ClaimsPrincipal user) =>
     return Results.Ok(new
     {
         userId = currentUser.Id,
-        email = currentUser.Email
+        email = currentUser.Email,
+        roles = userRoles.ToArray()
     });
 }).RequireAuthorization();
 

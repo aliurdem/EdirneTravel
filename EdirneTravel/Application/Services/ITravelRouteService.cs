@@ -2,7 +2,10 @@
 using EdirneTravel.Models.Dtos;
 using EdirneTravel.Models.Dtos.TravelRoute;
 using EdirneTravel.Models.Entities;
+using EdirneTravel.Models.Utilities.Filtering;
+using EdirneTravel.Models.Utilities.Paging;
 using EdirneTravel.Models.Utilities.Results;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EdirneTravel.Application.Services
 {
@@ -10,5 +13,6 @@ namespace EdirneTravel.Application.Services
     {
         IDataResult<TravelRoute> SaveTravelRouteWithPlaces(TravelRouteDto travelRouteDto);
         IDataResult<TravelRouteDto> GetTravelRouteWithPlacesById(int id);
+        IDataResult<PagedList<TravelRouteDto>> GetListWithPlaces([FromQuery] PaginationParameters paginationParameters, [FromBody] FilterParameters filterParameters);
     }
 }
