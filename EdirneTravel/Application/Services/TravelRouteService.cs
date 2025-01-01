@@ -75,7 +75,10 @@ namespace EdirneTravel.Application.Services
                     }
 
                     travelRoute.Name = travelRouteDto.Name;
-                    travelRoute.UserId = travelRouteDto.UserId;
+                    travelRoute.CategoryId = travelRouteDto.CategoryId;
+                    travelRoute.ImageData = travelRouteDto.ImageData;
+
+                    _repository.Update(travelRoute);
 
                     // İlişkili TravelRoutePlace'leri temizle
                     var existingPlaces = _travelRoutePlaceRepository
@@ -162,6 +165,9 @@ namespace EdirneTravel.Application.Services
             {
                 Id = travelRoute.Id,
                 Name = travelRoute.Name,
+                ImageData = travelRoute.ImageData,
+                AverageDuration = travelRoute.AverageDuration,
+                CategoryId = travelRoute.CategoryId,
                 UserId = travelRoute.UserId,
                 Places = places
             };
